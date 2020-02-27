@@ -9,15 +9,21 @@ var usersRouter = require('./routes/users');
 
 const mongoose = require('mongoose');
 const siteViews = require('./models/visits');
+var mongo = require('mongodb');
+
 
 const url = 'mongodb://localhost:27017/confusion';
-const connect = mongoose.connect(url);
+// const connect = mongoose.connect(url);
+// var ourDB;
 
-connect.then((db)=>{
-  console.log('connected succesfully to the server');
+ var SiteViewsUp = require('./src/visitsUp');
 
-})
-.catch((err)=>{console.log(err)});
+// connect.then((db)=>{
+//   console.log('connected succesfully to the server');
+//   ourDB = db;
+
+// })
+// .catch((err)=>{console.log(err)});
 
 
 var app = express();
@@ -32,8 +38,50 @@ app.use(express.urlencoded({ extended: false }));
 app.use(cookieParser());
 app.use(express.static(path.join(__dirname, 'public')));
 
-app.use('/', indexRouter);
-app.use('/users', usersRouter);
+// app.use('/', indexRouter);
+// app.use('/users', usersRouter);
+app.get('/', function(req, res, next) {
+
+  mongo.connect(url , (err, dbo) => {
+    if (err) console.log('Database error: ' + err);
+    let db = dbo.db('confusion');
+    let coll = db.collection('visits');
+
+    console.log(db);
+    SiteViewsUp.siteViewsUp(db, 'visits', 'home');
+    console.log(2);
+    db.collection('visits').findOne({page: 'home'}).then((data)=>{
+      console.log(data);
+      res.render('index',{counter: data.counter});
+      }, (err)=>{next(err)})
+      .catch((err)=>{next(err)})
+    
+
+  })
+ 
+});
+
+
+app.get('/about', function(req, res, next) {
+
+  mongo.connect(url , (err, dbo) => {
+    if (err) console.log('Database error: ' + err);
+    let db = dbo.db('confusion');
+    let coll = db.collection('visits');
+
+    console.log(db);
+    SiteViewsUp.siteViewsUp(db, 'visits', 'about');
+    console.log(2);
+    db.collection('visits').findOne({page: 'about'}).then((data)=>{
+      console.log(data);
+      res.render('about',{counter: data.counter});
+      }, (err)=>{next(err)})
+      .catch((err)=>{next(err)})
+    
+
+  })
+ 
+});
 
 // catch 404 and forward to error handler
 app.use(function(req, res, next) {

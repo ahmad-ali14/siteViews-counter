@@ -7,6 +7,10 @@ const schemaOptions = {
 
   const visitScema = new schema({
 
+    page:{
+      type: String,
+      required: true
+    },
     counter:{
         type: Number,
         required: true

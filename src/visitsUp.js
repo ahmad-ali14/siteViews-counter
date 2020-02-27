@@ -5,10 +5,17 @@ const mongoose = require('mongoose');
 const siteViews = require('../models/visits');
 
 
-siteViewsUp = function ( ) {
-    siteViews.findByIdAndUpdate('5e0df423ca927acbac7999d8', {$inc: {counter: 1}}, {new:true})
-    .then((data)=>{console.log(data.counter)})
+siteViewsUp = function (db,  pageName ) {
+    db.findOneAndUpdate({page: pageName }, {$inc: {counter: 1}}, {new:true})
+    .then((data)=>{console.log(data)})
     .catch((err)=>{console.log(err)});
 }
 
-module.exports = {siteViewsUp};
+module.exports = {
+    siteViewsUp: function (database, collection, page ) {
+        database.collection(collection).update({page: page}, {$inc: {counter: 1}}, {new:true})
+        .then((data)=>{console.log(data)})
+        .catch((err)=>{console.log(err)});
+    }
+    
+};

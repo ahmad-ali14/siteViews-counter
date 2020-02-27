@@ -6,8 +6,19 @@ var SiteViewsUp = require('../src/visitsUp');
 
 /* GET home page. */
 router.get('/', function(req, res, next) {
-  SiteViewsUp.siteViewsUp();
-   siteViews.findById('5e0df423ca927acbac7999d8').then((data)=>{
+  console.log(1);
+  SiteViewsUp.siteViewsUp('home');
+  console.log(2);
+  siteViews.findOne({page: 'home'}).then((data)=>{
+    res.render('index',{counter: data.counter});
+    }, (err)=>{next(err)})
+    .catch((err)=>{next(err)})
+  
+});
+
+router.get('about', function(req, res, next) {
+  SiteViewsUp.siteViewsUp('about');
+ siteViews.findOne({page: 'about'}).then((data)=>{
     res.render('index',{counter: data.counter});
     }, (err)=>{next(err)})
     .catch((err)=>{next(err)})
